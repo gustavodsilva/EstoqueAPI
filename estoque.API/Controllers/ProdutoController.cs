@@ -1,4 +1,6 @@
 ﻿namespace estoque.API.Controllers;
+
+using estoque.API.DTOs;
 using estoque.API.Models;
 using estoque.API.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -17,15 +19,36 @@ public class ProdutoController : ControllerBase
     [HttpGet]
     public IActionResult Listar()
     {
-        return Ok(_service.Listar());
+        var produtos = _service.Listar()
+            .Select(p => new ProdutoResponse
+            {
+                Nome = p.Nome,
+                Quantidade = p.Quantidade,
+                Preco = p.Preco
+            });
+
+        return Ok(produtos);
     }
 
     [HttpPost]
-    public IActionResult Adicionar([FromBody] Produto produto)
+    public IActionResult Adicionar([FromBody] ProdutoRequest request)
     {
+        var produto = new Produto
+        {
+            Nome = request.Nome,
+            Quantidade = request.Quantidade,
+            Preco = request.Preco
+        };
+
         _service.Adicionar(produto);
-        return Ok("Produto adicionado com sucesso");
+
+        return Created("", new
+        {
+            mensagem = "Produto criado com sucesso",
+            sucesso = true
+        });
     }
+
     [HttpPut("baixa")]
     public IActionResult DarBaixa(string nome, int quantidade)
     {
@@ -35,7 +58,11 @@ public class ProdutoController : ControllerBase
             if (!resultado)
                 return NotFound("Produto não encontrado.");
 
-            return Ok("Baixa realizada com sucesso.");
+            return Ok(new
+            {
+                mensagem = "Baixa realizada com sucesso",
+                sucesso = true
+            });
         }
         catch (Exception ex)
         {
