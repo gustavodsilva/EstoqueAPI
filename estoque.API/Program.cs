@@ -9,8 +9,16 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<ProdutoService>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("LiberarTudo",
+        policy => policy.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+});
 
 var app = builder.Build();
+app.UseCors("LiberarTudo");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
