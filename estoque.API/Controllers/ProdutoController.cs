@@ -26,4 +26,20 @@ public class ProdutoController : ControllerBase
         _service.Adicionar(produto);
         return Ok("Produto adicionado com sucesso");
     }
+    [HttpPut("baixa")]
+    public IActionResult DarBaixa(string nome, int quantidade)
+    {
+        try
+        {
+            var resultado = _service.DarBaixa(nome, quantidade);
+            if (!resultado)
+                return NotFound("Produto não encontrado.");
+
+            return Ok("Baixa realizada com sucesso.");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 }
